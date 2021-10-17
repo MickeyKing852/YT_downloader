@@ -98,7 +98,7 @@ class YT_downloader:
 
         logging.info('Finish -- merge')
 
-    def playlist_url_normalization(self,url:str)->list:
+    def playlist_url_normalization(self,url:str)->str:
         out_string = ''
         url = url.split('&')
 
