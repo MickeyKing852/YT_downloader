@@ -12,7 +12,13 @@ import os
 
 class YT_downloader:
 
-    def __init__(self):
+    def __init__(self,mode='gui'):
+        if mode == 'gui':
+            self.gui()
+        elif mode == 'cli':
+            self.cli()
+        else: pass
+
         self.log_setup()
 
     @staticmethod
@@ -22,6 +28,7 @@ class YT_downloader:
 
     @staticmethod
     def caption(url: str, lan: str, filename: str = '', out_path: str = '') -> None:
+        url = url.split('&')
 
         target = YouTube(url)
         subtitle = target.captions.get(lan)
@@ -43,7 +50,7 @@ class YT_downloader:
         logging.info('finish -- caption')
 
     def vdo(self, url: str, resolution: str, fps: int, filename: str = '', out_path: str = ''):
-
+        url = self.playlist_url_normalization(url)
         target = YouTube(url)
 
         if filename == '':
@@ -90,6 +97,23 @@ class YT_downloader:
         os.replace(f'{filename}.mp4', f'{out_path}/{filename}.mp4')
 
         logging.info('Finish -- merge')
+
+    def playlist_url_normalization(self,url:str)->list:
+        out_string = ''
+        url = url.split('&')
+
+        for i in url:
+            if 'list=' in i:
+               url.remove(i)
+
+        for i in url:
+            if 'index=' in i:
+               url.remove(i)
+
+        for i in url:
+            out_string += i
+
+        return out_string
 
     def vdo_info(self, url: str):
         target = YouTube(url)
@@ -258,5 +282,21 @@ class YT_downloader:
 
         root.mainloop()
 
+    def cli(self):
+        url = "https://www.youtube.com/watch?v=8nI1CDsNZI0&list=PLs9xv9XcDYotfNqp5X8GYo7vlcI0u11nT&index=6&ab_channel=MoriCalliopeCh.hololive-EN"
+        url = url.split('&')
+
+        for i in url:
+            if 'list=' in i:
+               url.remove(i)
+
+        for i in url:
+            if 'index=' in i:
+               url.remove(i)
+
+
+
+
+
 app = YT_downloader()
-app.gui()
+
