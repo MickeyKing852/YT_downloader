@@ -13,13 +13,13 @@ import os
 class YT_downloader:
 
     def __init__(self,mode='gui'):
+        self.log_setup()
+
         if mode == 'gui':
             self.gui()
         elif mode == 'cli':
             self.cli()
         else: pass
-
-        self.log_setup()
 
     @staticmethod
     def log_setup():
@@ -70,6 +70,7 @@ class YT_downloader:
 
     def sound(self, url: str, filename: str = '', out_path: str = ''):
 
+        url = self.playlist_url_normalization(url)
         target = YouTube(url)
 
         if filename == '':
@@ -294,9 +295,5 @@ class YT_downloader:
             if 'index=' in i:
                url.remove(i)
 
-
-
-
-
-app = YT_downloader()
+app = YT_downloader('cli')
 
