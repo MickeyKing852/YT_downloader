@@ -13,22 +13,24 @@ import os
 class YT_downloader:
 
     def __init__(self,mode='gui'):
+
+        self.log_setup()
+
         if mode == 'gui':
             self.gui()
         elif mode == 'cli':
             self.cli()
         else: pass
 
-        self.log_setup()
-
     @staticmethod
     def log_setup():
         log_format = '%(asctime)s -- %(levelname)s -- %(message)s'
         logging.basicConfig(level=logging.INFO, format=log_format, datefmt='%d/%m/%Y-%H:%M')
 
-    @staticmethod
-    def caption(url: str, lan: str, filename: str = '', out_path: str = '') -> None:
-        url = url.split('&')
+
+    def caption(self,url: str, lan: str, filename: str = '', out_path: str = '') -> None:
+
+        url = self.playlist_url_normalization(url)
 
         target = YouTube(url)
         subtitle = target.captions.get(lan)
@@ -50,13 +52,16 @@ class YT_downloader:
         logging.info('finish -- caption')
 
     def vdo(self, url: str, resolution: str, fps: int, filename: str = '', out_path: str = ''):
+
         url = self.playlist_url_normalization(url)
         target = YouTube(url)
 
         if filename == '':
-            filename = f'{target.title.replace("|", "")}'
+            filename = f'audio_{target.title.replace("|", "")}.mp4'
         elif '|' in filename:
-            filename = filename.replace('|', '')
+            filename = f'{filename.replace("|", "")}.mp4'
+        else:
+            filename = f'{filename}.mp4'
 
         logging.info(f'downloading {target.title} ({url}) -- vdo')
         if out_path == '':
@@ -65,26 +70,29 @@ class YT_downloader:
         else:
             target.streams.filter(subtype='mp4', resolution=resolution, fps=fps)[0].download(output_path=out_path,
                                                                                              filename=filename)
-            self.vdo_path = f'{out_path}/{filename}.mp4'
+            self.vdo_path = f'{out_path}/{filename}'
         logging.info('Finish -- vdo')
 
     def sound(self, url: str, filename: str = '', out_path: str = ''):
 
+        url = self.playlist_url_normalization(url)
         target = YouTube(url)
 
         if filename == '':
-            filename = f'audio_{target.title.replace("|", "")}'
+            filename = f'audio_{target.title.replace("|", "")}.mp4'
         elif '|' in filename:
-            filename = filename.replace('|', '')
+            filename = f'{filename.replace("|", "")}.mp4'
+        else:
+            filename = f'{filename}.mp4'
 
         logging.info(f'downloading {target.title} ({url}) -- sound')
         # change filename
         if out_path == '':
             target.streams.filter(type='audio').first().download(filename=filename)
-            self.audio_path = f'{filename}.mp4'
+            self.audio_path = f'{filename}'
         else:
             target.streams.filter(type='audio').first().download(output_path=out_path, filename=filename)
-            self.audio_path = f'{out_path}/{filename}.mp4'
+            self.audio_path = f'{out_path}/{filename}'
         logging.info('Finish -- sound')
 
     def merge(self, vdo_path: str, audio_path: str, filename: str, out_path: str) -> None:
@@ -98,7 +106,7 @@ class YT_downloader:
 
         logging.info('Finish -- merge')
 
-    def playlist_url_normalization(self,url:str)->list:
+    def playlist_url_normalization(self,url:str)->str:
         out_string = ''
         url = url.split('&')
 
@@ -116,6 +124,7 @@ class YT_downloader:
         return out_string
 
     def vdo_info(self, url: str):
+        url = self.playlist_url_normalization(url)
         target = YouTube(url)
         time = target.length
         captions = target.captions
