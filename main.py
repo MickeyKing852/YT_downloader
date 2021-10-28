@@ -31,13 +31,25 @@ class YT_downloader:
         log_format = '%(asctime)s -- %(levelname)s -- %(message)s'
         filename = f"{time.strftime('%d-%m-%Y', time.gmtime())}.log"
 
-        log_file, err = open(filename,'x')
+        try:
 
-        if err == '':
-            logging.basicConfig(filename=filename, filemode='r', level=logging.INFO, format=log_format, datefmt='%d/%m/%Y-%H:%M')
-        else:
+            log_file = open(filename,'x')
+            logging.basicConfig(filename=filename, filemode='w', level=logging.INFO, format=log_format,
+                                datefmt='%d/%m/%Y-%H:%M')
+
+        except FileExistsError:
             logging.basicConfig(filename=filename, filemode='a', level=logging.INFO, format=log_format,
                                 datefmt='%d/%m/%Y-%H:%M')
+
+
+
+        except Exception as e:
+            logging.critical(e)
+
+        finally:
+            console = logging.StreamHandler()
+            console.setFormatter(logging.Formatter(log_format))
+            logging.getLogger('').addHandler(console)
 
     def caption(self,url: str, lan: str, filename: str = '', out_path: str = '') -> None:
         try:
@@ -362,5 +374,5 @@ class YT_downloader:
             if 'index=' in i:
                url.remove(i)
 
-app
+app = YT_downloader()
 

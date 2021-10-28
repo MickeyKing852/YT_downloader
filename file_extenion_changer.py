@@ -1,4 +1,5 @@
 import os,tkinter
+import ffmpeg
 
 class file_extenion_changer:
     def __init__(self,old_extention:str,new_extention:str,path:str):
@@ -17,11 +18,8 @@ class file_extenion_changer:
     def rename_extention(self,old_extention:str,new_extention:str,file:list):
         new_file_name = []
         for item in file:
-            os.rename(item.path, str(item.path).replace(old_extention,new_extention))
+            # os.rename(item.path, str(item.path).replace(old_extention,new_extention))
+            ffmpeg.input(f'{item}.{old_extention}').output(f'{item}.{new_extention}').run()
 
 
-
-path = "C:\\Users\\micke\\Music\\YT_downloader\\Hololive"
-o_extent = 'mp3'
-n_extent = 'mp4'
-obj = file_extenion_changer(o_extent,n_extent,path)
+# obj = file_extenion_changer(o_extent,n_extent,path)
